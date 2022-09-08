@@ -13,9 +13,6 @@ WITH
 )
 
 
-SELECT year, date_, race, sex, age, officer_involved, fatal
-FROM shootings
-ORDER BY 1
 
 -- These data involve all shootings, subsetting to officer-involved ones
 
@@ -23,6 +20,7 @@ SELECT year, date_, race, sex, age, officer_involved, fatal
 FROM shootings
 WHERE officer_involved = "Y"
 ORDER BY 1
+LIMIT 5
 
 -- race, age and fatal are all missing for this subset
 
@@ -36,11 +34,11 @@ GROUP BY year
 -- percentage of officer-involved shootings out of all shootings per year
 
 
-SELECT year, COUNT(*) AS num_ids,
-       AVG(CASE WHEN ois = 'Y' THEN 1 ELSE 0 END) AS ois_ratio
+SELECT year, COUNT(*) AS total_shootings,
+       ROUND(AVG(CASE WHEN ois = 'Y' THEN 1 ELSE 0 END)*100, 2) AS ois_perc
 FROM (SELECT year, objectid, COUNT(*) AS cnt,
              MIN(officer_involved) AS ois
       FROM shootings
       GROUP BY year, objectid
      ) 
-GROUP BY year;
+GROUP BY year
